@@ -98,7 +98,12 @@ jobs:
       - name: Tag ECS Task Definition Revision
         if: success()
         run: |
-          TASK_DEF_ARN=$(jq -r '.taskDefinitionArn' ${{ steps.render-task-def.outputs.task-definition }})
+          echo "Fetching latest task definition ARN..."
+          TASK_DEF_ARN=$(aws ecs describe-task-definition \
+            --task-definition my_node_task \
+            --query 'taskDefinition.taskDefinitionArn' \
+            --output text)
+
           echo "Tagging ECS task definition: $TASK_DEF_ARN"
           aws ecs tag-resource \
             --resource-arn $TASK_DEF_ARN \

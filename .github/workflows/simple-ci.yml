@@ -70,7 +70,7 @@ jobs:
 
       - name: Update ECS task definition with new image
         id: task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@1
+        uses: aws-actions/amazon-ecs-render-task-definition@c804dfbdd57f713b6c079302a4c01db7017a36fc
         with:
           task-definition: ${{ env.ECS_TASK_DEFINITION }}
           container-name: ${{ env.CONTAINER_NAME }}
@@ -78,7 +78,7 @@ jobs:
 
       - name: Deploy Amazon ECS task definition
         id: deploy-ecs
-        uses: aws-actions/amazon-ecs-deploy-task-definition@1
+        uses: aws-actions/amazon-ecs-deploy-task-definition@df9643053eda01f169e64a0e60233aacca83799a
         with: 
           task-definition: ${{ steps.task-def.outputs.task-definition }}
           service: ${{ env.ECS_SERVICE }}

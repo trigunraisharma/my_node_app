@@ -76,20 +76,21 @@ jobs:
           container-name: ${{ env.CONTAINER_NAME }}
           image: ${{ steps.build-image.outputs.image }}
 
-      # - name: Deploy Amazon ECS task definition
-      #   id: deploy-ecs
-      #   uses: aws-actions/amazon-ecs-deploy-task-definition@df9643053eda01f169e64a0e60233aacca83799a
-      #   with: 
-      #     task-definition: ${{ steps.task-def.outputs.task-definition }}
-      #     service: ${{ env.ECS_SERVICE }}
-      #     cluster: ${{ env.ECS_CLUSTER }}
-      #     wait-for-service-stability: true
-
-      - name: Deploy Amazon ECS service
+      - name: Register new task definition
+        id: register-task
+        run: |
+          NEW_TASK_DEF_ARN=$(aws ecs register-task-definition \
+            --cli-input-json file://${{ steps.task-def.outputs.task-definition }} \
+            --query 'taskDefinition.taskDefinitionArn' \
+            --output text)
+          echo "new_task_definition_arn=$NEW_TASK_DEF_ARN" >> $GITHUB_OUTPUT
+          
+      - name: Force new deployment on ECS service
         id: deploy-ecs
-        uses: aws-actions/amazon-ecs-deploy-service@v1
-        with:
-          cluster: ${{ env.ECS_CLUSTER }}
+        uses: aws-actions/amazon-ecs-deploy-task-definition@df9643053eda01f169e64a0e60233aacca83799a
+        with: 
+          task-definition: ${{ steps.register-task.outputs.new_task_definition_arn }}
           service: ${{ env.ECS_SERVICE }}
-          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          force-new-deployment: true
           wait-for-service-stability: true

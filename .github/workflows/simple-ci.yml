@@ -69,7 +69,7 @@ jobs:
           mv clean-task-def.json ${{ env.ECS_TASK_DEFINITION }}
 
       - name: Update ECS task definition with new image
-        id: render-task-def
+        id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@c804dfbdd57f713b6c079302a4c01db7017a36fc
         with:
           task-definition: ${{ env.ECS_TASK_DEFINITION }}
@@ -90,8 +90,8 @@ jobs:
         uses: aws-actions/amazon-ecs-deploy-task-definition@df9643053eda01f169e64a0e60233aacca83799a
         with: 
           task-definition: ${{ steps.render-task-def.outputs.task-definition }}
-          service: ${{ env.ECS_SERVICE }}
-          cluster: ${{ env.ECS_CLUSTER }}
+          service: ${{ env.ECR_SERVICE }}
+          cluster: ${{ env.ECR_CLUSTER }}
           wait-for-service-stability: true
           force-new-deployment: true
 

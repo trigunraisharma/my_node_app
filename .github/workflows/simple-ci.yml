@@ -51,6 +51,20 @@ jobs:
             --query 'taskDefinition' \
             --output json > my_node_task.json
 
+      - name: Clean ECS task definition file
+        run: |
+          jq 'del(
+            .compatibilities,
+            .taskDefinitionArn,
+            .requiresAttributes,
+            .revision,
+            .status,
+            .registeredAt,
+            .registeredBy,
+            .enableFaultInjection
+          )' my_node_task.json > clean-task-def.json
+          mv clean-task-def.json my_node_task.json
+
       - name: Update ECS task definition with new image
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@c804dfbdd57f713b6c079302a4c01db7017a36fc

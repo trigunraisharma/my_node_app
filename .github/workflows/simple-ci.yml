@@ -52,7 +52,7 @@ jobs:
           aws ecs describe-task-definition \
             --task-definition my_node_task \
             --query 'taskDefinition' \
-            --output json > my_node_task.json
+            --output json > task-def.json
 
       - name: Clean ECS task definition file
         run: |
@@ -65,31 +65,31 @@ jobs:
             .registeredAt,
             .registeredBy,
             .enableFaultInjection
-          )' my_node_task.json > clean-task-def.json
-          mv clean-task-def.json my_node_task.json
+          )' task-def.json > clean-task-def.json
+          mv clean-task-def.json ${{ env.ECS_TASK_DEFINITION }}
 
       - name: Update ECS task definition with new image
-        id: task-def
+        id: render-task-def
         uses: aws-actions/amazon-ecs-render-task-definition@c804dfbdd57f713b6c079302a4c01db7017a36fc
         with:
           task-definition: ${{ env.ECS_TASK_DEFINITION }}
           container-name: ${{ env.CONTAINER_NAME }}
           image: ${{ steps.build-image.outputs.image }}
 
-      - name: Register new task definition
-        id: register-task
-        run: |
-          NEW_TASK_DEF_ARN=$(aws ecs register-task-definition \
-            --cli-input-json file://${{ steps.task-def.outputs.task-definition }} \
-            --query 'taskDefinition.taskDefinitionArn' \
-            --output text)
-          echo "new_task_definition_arn=$NEW_TASK_DEF_ARN" >> $GITHUB_OUTPUT
+      # - name: Register new task definition
+      #   id: register-task
+      #   run: |
+      #     NEW_TASK_DEF_ARN=$(aws ecs register-task-definition \
+      #       --cli-input-json file://${{ steps.task-def.outputs.task-definition }} \
+      #       --query 'taskDefinition.taskDefinitionArn' \
+      #       --output text)
+      #     echo "new_task_definition_arn=$NEW_TASK_DEF_ARN" >> $GITHUB_OUTPUT
           
-      - name: Force new deployment on ECS service
+      - name: Deploy to ECS service
         id: deploy-ecs
         uses: aws-actions/amazon-ecs-deploy-task-definition@df9643053eda01f169e64a0e60233aacca83799a
         with: 
-          task-definition: ${{ steps.register-task.outputs.new_task_definition_arn }}
+          task-definition: ${{ steps.render-task-def.outputs.task-definition }}
           service: ${{ env.ECS_SERVICE }}
           cluster: ${{ env.ECS_CLUSTER }}
           force-new-deployment: true

@@ -1,7 +1,10 @@
 name: my_node_app
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main
+  # workflow_dispatch:
 
 env:
   AWS_REGION: ${{ secrets.AWS_REGION }}

@@ -9,8 +9,8 @@ on:
 env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
   ECR_REPOSITORY: my_node_app
-  ECR_CLUSTER: my_node_cluster
-  ECR_SERVICE: my_node_service
+  ECS_CLUSTER: my_node_cluster
+  ECS_SERVICE: my_node_service
   ECS_TASK_DEFINITION: my_node_task.json
   CONTAINER_NAME: my_node_container
   IMAGE_TAG: ${{ github.sha }}
@@ -90,8 +90,8 @@ jobs:
         uses: aws-actions/amazon-ecs-deploy-task-definition@df9643053eda01f169e64a0e60233aacca83799a
         with: 
           task-definition: ${{ steps.render-task-def.outputs.task-definition }}
-          service: ${{ env.ECR_SERVICE }}
-          cluster: ${{ env.ECR_CLUSTER }}
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
           wait-for-service-stability: true
           force-new-deployment: true
 

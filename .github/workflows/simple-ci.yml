@@ -54,19 +54,19 @@ jobs:
             --query 'taskDefinition' \
             --output json > task-def.json
 
-      # - name: Clean ECS task definition file
-      #   run: |
-      #     jq 'del(
-      #       .compatibilities,
-      #       .taskDefinitionArn,
-      #       .requiresAttributes,
-      #       .revision,
-      #       .status,
-      #       .registeredAt,
-      #       .registeredBy,
-      #       .enableFaultInjection
-      #     )' task-def.json > clean-task-def.json
-      #     mv clean-task-def.json ${{ env.ECS_TASK_DEFINITION }}
+      - name: Clean ECS task definition file
+        run: |
+          jq 'del(
+            .compatibilities,
+            .taskDefinitionArn,
+            .requiresAttributes,
+            .revision,
+            .status,
+            .registeredAt,
+            .registeredBy,
+            .enableFaultInjection
+          )' task-def.json > clean-task-def.json
+          mv clean-task-def.json ${{ env.ECS_TASK_DEFINITION }}
 
       - name: Update ECS task definition with new image
         id: task-def

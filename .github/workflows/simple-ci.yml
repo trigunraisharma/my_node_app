@@ -11,7 +11,7 @@ env:
   ECR_REPOSITORY: my_node_app
   ECS_CLUSTER: my_node_cluster
   ECS_SERVICE: my_node_task_service
-  ECS_TASK_DEFINITION: my_node_task.json
+  ECS_TASK_DEFINITION: my_node_task
   CONTAINER_NAME: my_node_container
   IMAGE_TAG: ${{ github.sha }}
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}

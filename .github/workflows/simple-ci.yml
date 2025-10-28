@@ -75,15 +75,6 @@ jobs:
           task-definition: ${{ env.ECS_TASK_DEFINITION }}
           container-name: ${{ env.CONTAINER_NAME }}
           image: ${{ steps.build-image.outputs.image }}
-
-      # - name: Register new task definition
-      #   id: register-task
-      #   run: |
-      #     NEW_TASK_DEF_ARN=$(aws ecs register-task-definition \
-      #       --cli-input-json file://${{ steps.task-def.outputs.task-definition }} \
-      #       --query 'taskDefinition.taskDefinitionArn' \
-      #       --output text)
-      #     echo "new_task_definition_arn=$NEW_TASK_DEF_ARN" >> $GITHUB_OUTPUT
           
       - name: Deploy Amazon ECS task definition
         id: deploy-ecs
@@ -93,22 +84,3 @@ jobs:
           service: ${{ env.ECS_SERVICE }}
           cluster: ${{ env.ECS_CLUSTER }}
           wait-for-service-stability: true
-          #force-new-deployment: true
-
-      # - name: Tag ECS Task Definition Revision
-      #   if: success()
-      #   run: |
-      #     echo "Fetching latest task definition ARN..."
-      #     TASK_DEF_ARN=$(aws ecs describe-task-definition \
-      #       --task-definition my_node_task \
-      #       --query 'taskDefinition.taskDefinitionArn' \
-      #       --output text)
-
-      #     echo "Tagging ECS task definition: $TASK_DEF_ARN"
-      #     aws ecs tag-resource \
-      #       --resource-arn $TASK_DEF_ARN \
-      #       --tags \
-      #         key=GitCommit,value=${{ github.sha }} \
-      #         key=DeployedBy,value=GitHubActions \
-      #         key=Environment,value=Production \
-      #         key=App,value=${{ env.ECR_REPOSITORY }}
